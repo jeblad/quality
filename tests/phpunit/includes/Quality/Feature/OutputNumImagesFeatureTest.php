@@ -1,0 +1,113 @@
+<?php
+
+namespace Quality\Test;
+
+use Quality\Feature\OutputNumImagesFeature;
+
+/**
+ * Test Quality\Feature\OutputNumImagesFeature.
+ *
+ * @file
+ * @since 0.1
+ *
+ * @ingroup QualityTest
+ * @ingroup Test
+ *
+ * @group Database
+ * @group Quality
+ * @group QualityFeature
+ *
+ * @licence GNU GPL v2+
+ * @author John Erling Blad < jeblad@gmail.com >
+ *
+ */
+class OutputNumImagesFeatureTest extends \MediaWikiTestCase {
+
+	/**
+	 * @dataProvider provideBuildRepresentation
+	 */
+	public function testBuildRepresentation( $params, $opts, $expect ) {
+		$feature = new \Quality\Feature\OutputNumImagesFeature( $opts );
+		$this->assertEquals( $expect, $feature->buildRepresentation( $params ) );
+	}
+
+	public static function provideBuildRepresentation() {
+		$data = array(
+			array(
+				array( 'wikitext' => '' ),
+				array( 'max' => 3, 'bins' => 4 ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => 'foo bar' ),
+				array( 'max' => 3, 'bins' => 4 ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4 ),
+				array( false, true, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\n[[File:Bar]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4 ),
+				array( false, false, true, false )
+			),
+			/*
+			array(
+				array( 'wikitext' => "foo\n[[File:Yes we can has.jpg]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4 ),
+				array( false, true, false, false )
+			),
+			*/
+			array(
+				array( 'wikitext' => '' ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'broken' ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => 'foo bar' ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'broken' ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'broken' ),
+				array( false, true, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\n[[File:Bar]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'broken' ),
+				array( false, false, true, false )
+			),
+			array(
+				array( 'wikitext' => '' ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'valid' ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => 'foo bar' ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'valid' ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'valid' ),
+				array( true, false, false, false )
+			),
+			array(
+				array( 'wikitext' => "foo\n[[File:Foo]]\n[[File:Bar]]\nbar\n" ),
+				array( 'max' => 3, 'bins' => 4, 'subset' => 'valid' ),
+				array( true, false, false, false )
+			)
+		);
+		foreach ( $data as $key => $val ) {
+			$content = new \WikitextContent( $val[0]['wikitext'] );
+			$wikipage = new \Wikipage( \Title::newFromText( 'WikitextFeatureTest' ) );
+			$wikipage->doEditContent( $content, 'summary for test entry' );
+			$data[$key][0]['output'] = $wikipage->getParserOutput( new \ParserOptions() );
+		}
+		return $data;
+	}
+
+}
