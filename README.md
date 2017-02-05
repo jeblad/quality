@@ -3,6 +3,7 @@
 These is the readme file for the Quality extension.
 
 Extension page on mediawiki.org: https://www.mediawiki.org/wiki/Extension:Quality
+Notes on: https://no.wikipedia.org/wiki/Bruker:Jeblad/Kvalitets-_og_kvantitetsm%C3%A5l
 Latest version of the readme file: https://gerrit.wikimedia.org/r/gitweb?p=mediawiki/extensions/Quality.git;a=blob;f=README
 
 == About ==
